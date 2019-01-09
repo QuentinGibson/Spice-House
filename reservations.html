@@ -1,0 +1,130 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Spice House Cascade - Reservations</title><link rel="stylesheet" href="stylesheets/app.css"><meta name="viewport" content="width=device-width,initial-scale=1"><link href="https://fonts.googleapis.com/css?family=Playfair+Display|Raleway:300" rel="stylesheet"><script src="https://use.fontawesome.com/756dec971f.js"></script><!-- Generate using http://realfavicongenerator.net/ --><link rel="apple-touch-icon" sizes="152x152" href="./apple-touch-icon.png"><link rel="icon" type="image/png" href="../favicon-32x32.png" sizes="32x32"><link rel="icon" type="image/png" href="../favicon-16x16.png" sizes="16x16"><link rel="manifest" href="/manifest.json"><link rel="mask-icon" href="./safari-pinned-tab.svg" color="#9b8f74"><meta name="theme-color" content="#9b8f74"><meta property="og:image:height" content="346"><meta property="og:image:width" content="660"><meta property="og:description" content="Great new Caribbean Lounge/Bar located in Atlanta. Come try some of our delicious authentic Caribbean meals."><meta property="og:title" content="The Spice House at Cascade"><meta property="og:image" content="http://spicehousecascade.com/images/og-image.jpg"><meta property="og:url" content="spicehousecascade.com"><meta name="keywords" content="atlanta spice house Caribbean jerk lamb island islands alcohol bar lounge resturant date night cascade authentic plantains"><meta name="description" content="New Atlanta lounge and bar located in Cascade with authentic Caribbean food."></head><body> <?php
+
+  // define variables and set to empty values
+ $first = $last = $email = $phone = $prefContact = $company = $occasion = $eventDate = $start = $end = $numOfPeople = $info = "";
+ $error = FALSE;
+
+    if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
+        $recipient = 'spicehousecascade@gmail.com';
+        $sender = 'events@spicehousecascade.com';
+        $user = 'AKIAIOCOHPE7CZQUGO7Q';
+        $password = 'AgcDjtmTnxSOhKMmxzvws89mdyszKudWdxvpPgaEQ8uU';
+
+        $first = test_input($_POST["First"]);
+        $last = test_input($_POST["Last"]);
+        $email = test_input($_POST["Email"]);
+        $phone = test_input($_POST["Phone"]);
+        $contact = test_input($_POST["Contact"]);
+        $company = test_input($_POST["Company"]);
+        $occasion = test_input($_POST['Occasion']);
+        $eventDate = test_input($_POST["Event-Date"]);
+        $start = test_input($_POST["start"]);
+        $end = test_input($_POST["end"]);
+        $numOfPeople = test_input($_POST["people"]);
+        $info = test_input($_POST["addinfo"]);
+        $reqList = array( $first, $last, $email, $phone, $eventDate );
+
+        //Body of the Email
+        $msg =  "First Name: ". $first . '<br>' .
+        		"Last Name: ". $last . '<br>' .
+        		"Email: " . $email . '<br>' .
+        		"Phone: " . $phone . '<br>' .
+        		"Prefered Contact: " . $contact . '<br>' .
+        		"Company: " . $company . '<br>' .
+        		"Occasion: " . $occasion . '<br>' .
+        		"Event Date: " . $eventDate . '<br>' .
+        		"Start Time: " . $start . '<br>' . 
+        		"End Time: " . $end . '<br>' . 
+        		"Number Of People: " . $numOfPeople . '<br>' .
+        		"Additional Information: " . $info;
+
+        foreach ($reqList as $item) {
+            if (empty($item)) {
+                $errormessage = "Please fill out all required sections.";
+                $error = TRUE;
+                break;
+            }
+        }
+        if (!$error) {
+            // Replace sender@example.com with your "From" address. 
+            // This address must be verified with Amazon SES.
+            define('SENDER', $sender);        
+
+            // Replace recipient@example.com with a "To" address. If your account 
+            // is still in the sandbox, this address must be verified.
+            define('RECIPIENT', $recipient);  
+                                                                  
+            // Replace smtp_username with your Amazon SES SMTP user name.
+            define('USERNAME',$user);  
+
+            // Replace smtp_password with your Amazon SES SMTP password.
+            define('PASSWORD',$password);  
+
+            // If you're using Amazon SES in a region other than US West (Oregon), 
+            // replace email-smtp.us-west-2.amazonaws.com with the Amazon SES SMTP  
+            // endpoint in the appropriate region.
+            define('HOST', 'email-smtp.us-east-1.amazonaws.com');  
+
+             // The port you will connect to on the Amazon SES SMTP endpoint.
+            define('PORT', '587');     
+
+            // Other message information                                               
+            define('SUBJECT', $first . " " . $last . " wants to book a private event.");
+
+            define('TYPE', 'text/html');
+
+            define('BODY', $msg);
+
+            require_once 'Mail.php';
+
+            $headers = array (
+              'From' => SENDER,
+              'To' => RECIPIENT,
+              'Subject' => SUBJECT,
+              'Content-Type' => TYPE);
+
+            $smtpParams = array (
+              'host' => HOST,
+              'port' => PORT,
+              'auth' => true,
+              'username' => USERNAME,
+              'password' => PASSWORD
+            );
+
+             // Create an SMTP client.
+            $mail = Mail::factory('smtp', $smtpParams);
+
+            // Send the email.
+            $result = $mail->send(RECIPIENT, $headers, BODY);
+
+            if (PEAR::isError($result)) {
+              $errormessage = "There was a problem sending your reservation please try again later.";
+            } else {
+            $errormessage='<strong>Sent!</strong> We will contact you with more information soon';
+            $first = $last = $email = $phone = $prefContact = $company = $occasion = $eventDate = $start = $end = $numOfPeople = $info = "";
+            }
+        }
+  }
+
+    function test_input($data) {
+        $data = trim($data);
+        $data = stripslashes($data);
+        $data = htmlspecialchars($data);
+        return $data;
+  }
+?> <nav class="navbar navbar-default navbar-fixed-top"><a class="navbar-brand" href="/">SH</a><div class="container"><div class="navbar-header"><button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false"><span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span></button></div><div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1"><ul class="nav navbar-nav"><li><a href="/">Home</a></li><li><a href="menu">Menu</a></li><li><a href="reservations">Reservations</a></li><li><a href="pickup">Pick-up / Delivery</a></li></ul></div><!-- /.navbar-collapse --></div></nav><div class="container p-y-3"><div class="row pickup"><div class="col-md-12"><div class="row"><h2>Reservations</h2><script type="text/javascript" src="//www.opentable.com/widget/reservation/loader?rid=346867&domain=com&type=standard&theme=wide&lang=en&overlay=fals&iframe=true"></script></div></div><div class="col-md-12"><div class="row"><h2 class="delivery">Private Events</h2></div></div></div> <?php
+        if ($_SERVER["REQUEST_METHOD"] === "POST") { echo
+            "<div class='col-md-12'>
+            <div class='container'>
+                <div class='row'>
+                    <div class='error'>
+                        <p class='text-center'>
+                            $errormessage
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>";
+        }
+    ?> <div class="col-md-10 form-container"><div class="row"><form class="col-md-12" method="post" action="<?php echo htmlspecialchars($_SERVER[" PHP_SELF "], ENT_QUOTES);?>"><div class="col-sm-6"><label for="first">First Name <span class="required">*</span></label><input id="first" type="text" name="First" value="<?php echo $first; ?>" required autocomplete="given-name"></div><div class="col-sm-6"><label for="last">Last Name <span class="required">*</span></label><input id="last" type="text" name="Last" value="<?php echo $last; ?>" required autocomplete="family-name"></div><div class="col-sm-12"><label for="email-address">Email Address <span class="required">*</span></label><input id="email-address" type="email" name="Email" value="<?php echo $email; ?>" required autocomplete="email"></div><div class="col-sm-12"><label for="phone">Phone Number <span class="required">*</span></label><input id="phone" type="tel" name="Phone" value="<?php echo $phone; ?>" required autocomplete="tel"></div><div class="col-sm-12"><label for="contact">Perfered Contact</label><select id="contact" name="Contact"><option value="Phone">Phone</option><option value="Email">Email</option></select></div><div class="col-sm-12"><label for="company">Company</label><input id="company" type="text" name="Company" value="<?php echo $company; ?>"></div><div class="col-sm-12"><label for="occasion">Name of the Occasion (Ex: Birthday Party, Wedding Party)</label><input id="occasion" type="text" name="Occasion" value="<?php echo $occasion; ?>"></div><div class="col-sm-12"><label for="eventdate">Event Date <span class="required">*</span></label><input id="eventdate" type="date" name="Event-Date" value="<?php echo $eventDate; ?>" required></div><div class="col-sm-6"><label for="startTime">Start Time</label><input id="startTime" type="time" name="start" value="<?php echo $start; ?>"></div><div class="col-sm-6"><label for="endTime">End Time</label><input id="endTime" type="time" name="end" value="<?php echo $end; ?>"></div><div class="col-sm-6"><label for="numberOfPeople">Number of People</label><input id="numberOfPeople" type="text" name="people" value="<?php echo $numOfPeople; ?>"></div><div class="col-sm-12"><label for="information">Additional Information</label><textarea id="information" name="addinfo"> <?php echo $info; ?> </textarea></div><div class="col-sm-12"><input class="submit-button" type="submit" name="send" value="Submit"></div></form></div></div></div><footer><div class="container"><div class="row"><div class="col-md-4"><h4 class="header">Location &amp; Hours</h4><p class="info m-b-3">2247 Cascade Rd SW Atlanta, GA 30311</p><p class="hours text-center"><span>Monday-Thurs</span>: 11-4 and 5-11</p><p class="hours text-center"><span>Friday</span>: 11-4 and 5-1</p><p class="hours text-center"><span>Saturday</span>: 9-4 and 5-1</p><p class="hours text-center"><span>Sunday</span>: 9-4 and 5-11</p></div><div class="col-md-4"><h4 class="header">Reservations</h4><p class="info">We take reservations everyday<br>Call (470) 575-5999 or fill out our <a href="reservations">form</a></p></div><div class="col-md-4"><h4 class="header">Private Events</h4><p class="info">We hold private events for any occasion<br>Call (470) 575-5999 or fill out our <a href="reservations">form</a></p></div></div><div class="row last-row"><div class="col-md-6"><p class="copyright">&copy; Spice House Cascade</p></div><div class="col-md-6 text-center"><a href="https://www.facebook.com/spicehousecascade/" target="_blank"><i class="fa fa-facebook-official fa-3x" aria-hidden="true"></i> </a><a href="https://www.instagram.com/spicehousecascade/" target="_blank"><i class="fa fa-instagram fa-3x"></i></a></div></div></div></footer><script src="javascripts/app.js"></script></body></html>
